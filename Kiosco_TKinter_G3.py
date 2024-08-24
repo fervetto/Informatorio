@@ -16,6 +16,7 @@ def agregar_producto(id_producto: int, nombre: str, precio: float, presentacion:
     print(f'Producto {nuevo_producto['nombre']} agregado')
     for producto in inventario:
         print(producto['nombre'])
+    listbox_inventario.insert(tk.END, f"{producto["nombre"]}: ${producto['precio']} (Cantidad: {producto['cantidad']})")
     
 def vender_producto(id_producto, cantidad_vendida, inventario, ventas):
     for producto in inventario:
@@ -26,6 +27,12 @@ def vender_producto(id_producto, cantidad_vendida, inventario, ventas):
 def mostrar_inventario(inventario):
     for producto in inventario:
         print (f'{producto["nombre"]}, {producto["presentacion"]} unidades: {producto["cantidad"]}')
+
+
+def actualizar_inventario(inventario):
+    listbox_inventario.delete(0, tk.END)
+    for producto, detalles in productos.items():
+        listbox_inventario.insert(tk.END, f"{producto}: ${detalles['precio']} (Cantidad: {detalles['cantidad']})")
 
             
 # Crear la ventana principal
@@ -67,13 +74,13 @@ boton_agregar_producto = tk.Button(ventana, text="Agrega Producto", command = la
 boton_agregar_producto.grid(row=6, column=1, padx=10, pady=10)
 
 boton_mostrar_inventario = tk.Button(ventana, text="Mostrar Inventario", command = lambda: mostrar_inventario(inventario))
-boton_mostrar_inventario.grid(row=8, column=2, padx=10, pady=10)
+boton_mostrar_inventario.grid(row=8, column=1, padx=10, pady=10)
 
 # Crear List Box
 label_inventario = tk.Label(ventana, text="Inventario:")
-label_inventario.grid(row=8, column=1, padx=10, pady=10)
+label_inventario.grid(row=9, column=1, padx=10, pady=10)
 listbox_inventario = tk.Listbox(ventana)
-listbox_inventario.grid(row=9, column=1, padx=50, pady=10)
+listbox_inventario.grid(row=9, column=1, sticky='ew', padx=50, pady=10)
 
 
 
