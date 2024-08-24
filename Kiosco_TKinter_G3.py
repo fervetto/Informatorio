@@ -1,5 +1,7 @@
 import tkinter as tk
+from tkinter import messagebox
 
+id_siguiente = 0
 ventas = 0
 inventario = []
 productos = {
@@ -7,18 +9,39 @@ productos = {
     'nombre' : '',
     'precio' : '',
     'presentación' : '',
+    'cantidad' : ''
 }
 
 def agregar_producto(id_producto: int, nombre: str, precio: float, presentacion: str, cantidad: int):
-    nuevo_producto = {'id_producto' : id_producto, 'nombre' : nombre.get(), 'precio' : precio.get(),
-                      'presentacion': presentacion.get(), 'cantidad' : cantidad.get()}
+    global id_siguiente
+    id_siguiente = int(id_siguiente)
+
+    nuevo_producto = {
+        'id_producto': id_producto.get(),
+        'nombre': nombre.get(),
+        'precio': float(precio.get()),
+        'presentacion': presentacion.get(),
+        'cantidad': int(cantidad.get())
+    }
+    for producto in inventario:
+        if id_producto.get() == producto['id_producto']:
+            messagebox.showwarning("Advertencia", "El ID del producto ya existe")
+            return
     inventario.append(nuevo_producto)
     print(f'Producto {nuevo_producto['nombre']} agregado')
     for producto in inventario:
         print(producto['nombre'])
     listbox_inventario.insert(tk.END, f"{producto["nombre"]}: ${producto['precio']} (Cantidad: {producto['cantidad']})")
+    id_siguiente += 1
+    limpiar_entradas()
     
-    
+def limpiar_entradas():
+    id_producto.delete(0, tk.END)
+    nombre.delete(0, tk.END)
+    precio.delete(0, tk.END)
+    presentacion.delete(0, tk.END)
+    cantidad.delete(0, tk.END)
+    id_producto.insert(0, id_siguiente)
     
 def vender_producto(id_producto, cantidad_vendida, inventario, ventas):
     for producto in inventario:
@@ -49,6 +72,7 @@ label_id_producto = tk.Label(ventana, text="ID Producto:")
 label_id_producto.grid(row=0, column=0, padx=10, pady=10)
 id_producto = tk.Entry(ventana)
 id_producto.grid(row=0, column=1, padx=10, pady=10)
+id_producto.insert(0, id_siguiente)
 
 label_nombre = tk.Label(ventana, text="Nombre Producto:")
 label_nombre.grid(row=2, column=0, padx=10, pady=10)
@@ -61,19 +85,19 @@ precio = tk.Entry(ventana)
 precio.grid(row=3, column=1, padx=10, pady=10)
 
 
-label_cantidad = tk.Label(ventana, text="Cantidad:")
-label_cantidad.grid(row=4, column=0, padx=10, pady=10)
-cantidad = tk.Entry(ventana)
-cantidad.grid(row=4, column=1, padx=10, pady=10)
-
-
-label_presentacion = tk.Label(ventana, text="Presentación: ")
-label_presentacion.grid(row=5, column=0, padx=10, pady=10)
+label_presentacion = tk.Label(ventana, text="Presentacion:")
+label_presentacion.grid(row=4, column=0, padx=10, pady=10)
 presentacion = tk.Entry(ventana)
-presentacion.grid(row=5, column=1, padx=10, pady=10)
+presentacion.grid(row=4, column=1, padx=10, pady=10)
+
+
+label_cantidad = tk.Label(ventana, text="Cantidad: ")
+label_cantidad.grid(row=5, column=0, padx=10, pady=10)
+cantidad = tk.Entry(ventana)
+cantidad.grid(row=5, column=1, padx=10, pady=10)
 
 # Crear Botonones
-boton_agregar_producto = tk.Button(ventana, text="Agrega Producto", command = lambda: agregar_producto(id_producto, nombre, precio, cantidad, presentacion))
+boton_agregar_producto = tk.Button(ventana, text="Agrega Producto", command = lambda: agregar_producto(id_producto, nombre, precio, presentacion, cantidad))
 boton_agregar_producto.grid(row=6, column=1, padx=10, pady=10)
 
 boton_mostrar_inventario = tk.Button(ventana, text="Mostrar Inventario", command = lambda: mostrar_inventario(inventario))
