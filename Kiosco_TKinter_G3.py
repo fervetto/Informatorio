@@ -18,11 +18,14 @@ def agregar_producto(id_producto: int, nombre: str, precio: float, presentacion:
         print(producto['nombre'])
     listbox_inventario.insert(tk.END, f"{producto["nombre"]}: ${producto['precio']} (Cantidad: {producto['cantidad']})")
     
+    
+    
 def vender_producto(id_producto, cantidad_vendida, inventario, ventas):
     for producto in inventario:
         if id_producto == producto['id_producto']:
             producto['cantidad'] -= cantidad_vendida
             ventas += producto['precio']*cantidad_vendida
+
 
 def mostrar_inventario(inventario):
     for producto in inventario:
@@ -78,9 +81,9 @@ boton_mostrar_inventario.grid(row=8, column=1, padx=10, pady=10)
 
 # Crear List Box
 label_inventario = tk.Label(ventana, text="Inventario:")
-label_inventario.grid(row=9, column=1, padx=10, pady=10)
-listbox_inventario = tk.Listbox(ventana)
-listbox_inventario.grid(row=9, column=1, sticky='ew', padx=50, pady=10)
+label_inventario.grid(row=0, column=2)
+listbox_inventario = tk.Listbox(ventana, width=40)
+listbox_inventario.grid(row=1, column=2, rowspan=6, padx=10, pady=10, sticky='ns')
 
 
 
