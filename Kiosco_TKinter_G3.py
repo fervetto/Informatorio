@@ -1,21 +1,46 @@
 import tkinter as tk
 from tkinter import messagebox
+import csv
 
+#Inicialización de variables globales
+keys = 'id_producto', 'nombre', 'precio', 'presentacion', 'cantidad'
 id_siguiente = 0
 ventas = 0
 inventario = []
-productos = {
-    'id_producto': '',
-    'nombre' : '',
-    'precio' : '',
-    'presentación' : '',
-    'cantidad' : ''
-}
 
-def agregar_producto(id_producto: int, nombre: str, precio: float, presentacion: str, cantidad: int):
+#Importa el archivo persistente csv
+def importar_archivo_persistente():
+    global keys
+    global inventario
     global id_siguiente
-    id_siguiente = int(id_siguiente)
+    with open('inventario.csv', 'r') as archivo_csv:
+        lector_csv = csv.DictReader(archivo_csv, keys)
+        for row in lector_csv:
+           inventario.append(row)
+           print(row)
+           id_siguiente += 1
+    return inventario
 
+#Crea un archivo persistente CSV
+def crear_archivo_persistente():
+    with open("inventario.csv", 'w', newline='') as archivo_csv:
+        global keys
+        escritor_csv = csv.DictWriter(archivo_csv, fieldnames = keys)
+        #escritor_csv.writeheader()
+
+#Actualiza el archivo persistente CSV        
+def actualizar_archivo_persistente(nuevo_producto):
+    with open ("inventario.csv", 'a', newline = '' ) as archivo_csv:
+        global keys
+        escritor_csv = csv.DictWriter(archivo_csv, fieldnames = keys)
+        escritor_csv.writerow(nuevo_producto)
+
+# Agrega un nuevo producto al Inventario
+def agregar_producto(id_producto: int, nombre: str, precio: float, presentacion: str, cantidad: int, archivo_csv):
+    global id_siguiente
+    global keys
+    global escritor_csv
+    id_siguiente = int(id_siguiente)
     nuevo_producto = {
         'id_producto': id_producto.get(),
         'nombre': nombre.get(),
@@ -25,6 +50,8 @@ def agregar_producto(id_producto: int, nombre: str, precio: float, presentacion:
     }
     for producto in inventario:
         if id_producto.get() == producto['id_producto']:
+            id_siguiente+=1
+            id_producto.insert(0, id_siguiente)
             messagebox.showwarning("Advertencia", "El ID del producto ya existe")
             return
     inventario.append(nuevo_producto)
@@ -33,8 +60,10 @@ def agregar_producto(id_producto: int, nombre: str, precio: float, presentacion:
         print(producto['nombre'])
     listbox_inventario.insert(tk.END, f"{producto["nombre"]}: ${producto['precio']} (Cantidad: {producto['cantidad']})")
     id_siguiente += 1
+    actualizar_archivo_persistente(nuevo_producto)
     limpiar_entradas()
-    
+
+#Limpia las entradas de texto del menú 
 def limpiar_entradas():
     id_producto.delete(0, tk.END)
     nombre.delete(0, tk.END)
@@ -54,17 +83,27 @@ def mostrar_inventario(inventario):
     for producto in inventario:
         print (f'{producto["nombre"]}, {producto["presentacion"]} unidades: {producto["cantidad"]}')
 
-
+#Actualiza el inventario del listbox
 def actualizar_inventario(inventario):
     listbox_inventario.delete(0, tk.END)
     for producto, detalles in productos.items():
         listbox_inventario.insert(tk.END, f"{producto}: ${detalles['precio']} (Cantidad: {detalles['cantidad']})")
 
-            
+try:
+    inventario = importar_archivo_persistente()
+except:
+    pass
+#    inventario = crear_archivo_persistente()
+
+#with open("inventario.csv", 'r+', newline='') as archivo_csv:
+
+        
 # Crear la ventana principal
 ventana = tk.Tk()
 ventana.title("Kiosco APP")
 ventana.geometry('600x600')
+#escritor_csv = csv.DictWriter(archivo_csv, fieldnames= keys)
+
 
 
 # Crea entradas de texto
@@ -97,7 +136,7 @@ cantidad = tk.Entry(ventana)
 cantidad.grid(row=5, column=1, padx=10, pady=10)
 
 # Crear Botonones
-boton_agregar_producto = tk.Button(ventana, text="Agrega Producto", command = lambda: agregar_producto(id_producto, nombre, precio, presentacion, cantidad))
+boton_agregar_producto = tk.Button(ventana, text="Agrega Producto", command = lambda: agregar_producto(id_producto, nombre, precio, presentacion, cantidad, inventario))
 boton_agregar_producto.grid(row=6, column=1, padx=10, pady=10)
 
 boton_mostrar_inventario = tk.Button(ventana, text="Mostrar Inventario", command = lambda: mostrar_inventario(inventario))
@@ -109,8 +148,10 @@ label_inventario.grid(row=0, column=2)
 listbox_inventario = tk.Listbox(ventana, width=40)
 listbox_inventario.grid(row=1, column=2, rowspan=6, padx=10, pady=10, sticky='ns')
 
-
-
+# Cargar Listbox precargada
+for producto in inventario:
+    print(producto['nombre'])
+    listbox_inventario.insert(tk.END, f"{producto["nombre"]}: ${producto['precio']} (Cantidad: {producto['cantidad']})")
 
 #Iniciar el bucle principal
 ventana.mainloop()
