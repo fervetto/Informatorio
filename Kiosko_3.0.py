@@ -24,6 +24,7 @@ def importar_archivo_persistente():
 
 #Crea un archivo persistente CSV
 def crear_archivo_persistente():
+    global escritor_csv
     with open("inventario.csv", 'w', newline='') as archivo_csv:
         global keys
         escritor_csv = csv.DictWriter(archivo_csv, fieldnames = keys)
@@ -40,7 +41,6 @@ def actualizar_archivo_persistente(nuevo_producto):
 def agregar_producto(id_producto: int, nombre: str, precio: float, presentacion: str, cantidad: int, archivo_csv):
     global id_siguiente
     global keys
-    global escritor_csv
     id_siguiente = int(id_siguiente)
     nuevo_producto = {
         'id_producto': id_producto.get(),
@@ -166,11 +166,12 @@ def mostrar_inventario():
 try:
     inventario = importar_archivo_persistente()
 except:
-    pass
-# Crear la ventana principal
+    crear_archivo_persistente()
+    
+    #Crear la ventana principal
 ventana = tk.Tk()
 ventana.title("Kiosco APP")
-ventana.geometry('600x600')
+ventana.geometry('600x400')
 
 # Crear entradas de texto
 label_id_producto = tk.Label(ventana, text="ID Producto:")
@@ -223,7 +224,7 @@ boton_buscar_producto.grid(row=8, column=1, padx=10, pady=10)
 label_inventario = tk.Label(ventana, text="Inventario:")
 label_inventario.grid(row=0, column=2)
 listbox_inventario = tk.Listbox(ventana, width=40)
-listbox_inventario.grid(row=1, column=2, rowspan=6, padx=10, pady=10, sticky='ns')
+listbox_inventario.grid(row=1, column=2, rowspan=12, padx=10, pady=10, sticky='ns')
 
 # Cargar Listbox precargada
 for producto in inventario:

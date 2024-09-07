@@ -92,7 +92,7 @@ def actualizar_inventario(inventario):
 try:
     inventario = importar_archivo_persistente()
 except:
-    pass
+    crear_archivo_persistente()
 #    inventario = crear_archivo_persistente()
 
 #with open("inventario.csv", 'r+', newline='') as archivo_csv:
@@ -101,7 +101,7 @@ except:
 # Crear la ventana principal
 ventana = tk.Tk()
 ventana.title("Kiosco APP")
-ventana.geometry('600x600')
+ventana.geometry('600x400')
 #escritor_csv = csv.DictWriter(archivo_csv, fieldnames= keys)
 
 
@@ -146,7 +146,7 @@ boton_mostrar_inventario.grid(row=8, column=1, padx=10, pady=10)
 label_inventario = tk.Label(ventana, text="Inventario:")
 label_inventario.grid(row=0, column=2)
 listbox_inventario = tk.Listbox(ventana, width=40)
-listbox_inventario.grid(row=1, column=2, rowspan=6, padx=10, pady=10, sticky='ns')
+listbox_inventario.grid(row=1, column=2, rowspan=10, padx=10, pady=10, sticky='ns')
 
 # Cargar Listbox precargada
 for producto in inventario:
